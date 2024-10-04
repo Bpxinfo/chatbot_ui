@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 function Chatbot() {
   const navigate = useNavigate();
   const [files, setFiles] = useState([]); // State to store the file names
-  const [dropdownVisible, setDropdownVisible] = useState(false); // State to manage dropdown visibility
+  //const [dropdownVisible, setDropdownVisible] = useState(false); // State to manage dropdown visibility
   const [showSidebar, setShowSidebar] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [messages, setMessages] = useState([{ sender: 'bot', text: "Hello! I'm your chatbot assistant. How can I help?" }]);
