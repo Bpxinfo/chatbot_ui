@@ -68,7 +68,7 @@ function Chatbot() {
       });
 
       const botResponse = response.data.response;
-      let tempText = '';
+      var tempText = '';
 
       // Streaming effect for bot response
       for (const char of botResponse) {
