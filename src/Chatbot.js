@@ -72,14 +72,15 @@ function Chatbot() {
 
       // Streaming effect for bot response
       for (const char of botResponse) {
-        tempText += char;
+        let tempTextCopy = tempText + char;
+ 
         setMessages((prevMessages) => {
           const updatedMessages = [...prevMessages];
           // Ensure bot's streaming text is shown properly
           if (updatedMessages[updatedMessages.length - 1].sender === 'bot') {
-            updatedMessages[updatedMessages.length - 1].text = tempText;
+            updatedMessages[updatedMessages.length - 1].text = tempTextCopy;
           } else {
-            updatedMessages.push({ sender: 'bot', text: tempText });
+            updatedMessages.push({ sender: 'bot', text: tempTextCopy });
           }
           return updatedMessages;
         });
