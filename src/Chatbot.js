@@ -80,15 +80,21 @@ const handleSubmit = async (e) => {
     ]);
 
     // Streaming effect for bot response
-    for (const char of botResponse) {
-      tempText += char;
-      setMessages((prevMessages) => {
-        // Update the last message in the array (the bot's message)
-        const updatedMessages = [...prevMessages];
-        updatedMessages[updatedMessages.length - 1].text = tempText;
-        return updatedMessages;
-      });
-      await new Promise((resolve) => setTimeout(resolve, 20)); // Delay for streaming effect
+    for (let i = 0; i < botResponse.length; i++) {
+      tempText += botResponse[i];
+
+      // Capturing the current tempText value in a closure-safe manner
+      const currentTempText = tempText;
+
+      // Use an async IIFE to handle the streaming effect and avoid no-loop-func issue
+      await (async () => {
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          updatedMessages[updatedMessages.length - 1].text = currentTempText;
+          return updatedMessages;
+        });
+        await new Promise((resolve) => setTimeout(resolve, 20)); // Delay for streaming effect
+      })();
     }
   } catch (error) {
     console.error('Error fetching bot response:', error);
@@ -96,6 +102,7 @@ const handleSubmit = async (e) => {
 
   setLoading(false);
 };
+
 
 
   // Function to handle file selection
