@@ -51,46 +51,52 @@ function Chatbot() {
     fetchFiles();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (inputMessage.trim() === '') return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (inputMessage.trim() === '') return;
 
-    // Add user's message to the chat history
-    setMessages((prevMessages) => [...prevMessages, { sender: 'user', text: inputMessage }]);
-    setInputMessage('');
-    setLoading(true);
+  // Add user's message to the chat history
+  setMessages((prevMessages) => [
+    ...prevMessages, 
+    { sender: 'user', text: inputMessage }
+  ]);
+  setInputMessage('');
+  setLoading(true);
 
-    try {
-      // Send the message and selected file name to Flask backend API
-      const response = await axios.post('http://127.0.0.1:5000/chat', {
-        message: inputMessage,
-        fileName: selectedFile, // Pass the selected file name
+  try {
+    // Send the message and selected file name to Flask backend API
+    const response = await axios.post('http://127.0.0.1:5000/chat', {
+      message: inputMessage,
+      fileName: selectedFile, // Pass the selected file name
+    });
+
+    const botResponse = response.data.response;
+    let tempText = '';
+
+    // Add bot's initial response placeholder
+    setMessages((prevMessages) => [
+      ...prevMessages, 
+      { sender: 'bot', text: '' }
+    ]);
+
+    // Streaming effect for bot response
+    for (const char of botResponse) {
+      tempText += char;
+      setMessages((prevMessages) => {
+        // Update the last message in the array (the bot's message)
+        const updatedMessages = [...prevMessages];
+        updatedMessages[updatedMessages.length - 1].text = tempText;
+        return updatedMessages;
       });
-
-      const botResponse = response.data.response;
-      var tempText = '';
-
-      // Streaming effect for bot response
-      for (const char of botResponse) {
-        tempText += char;
-        setMessages((prevMessages) => {
-          const updatedMessages = [...prevMessages];
-          // Ensure bot's streaming text is shown properly
-          if (updatedMessages[updatedMessages.length - 1].sender === 'bot') {
-            updatedMessages[updatedMessages.length - 1].text = tempText;
-          } else {
-            updatedMessages.push({ sender: 'bot', text: tempText });
-          }
-          return updatedMessages;
-        });
-        await new Promise((resolve) => setTimeout(resolve, 20)); // Delay for streaming effect
-      }
-    } catch (error) {
-      console.error('Error fetching bot response:', error);
+      await new Promise((resolve) => setTimeout(resolve, 20)); // Delay for streaming effect
     }
+  } catch (error) {
+    console.error('Error fetching bot response:', error);
+  }
 
-    setLoading(false);
-  };
+  setLoading(false);
+};
+
 
   // Function to handle file selection
   const handleFileSelection = (fileName) => {
